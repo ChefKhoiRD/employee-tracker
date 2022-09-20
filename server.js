@@ -23,7 +23,6 @@ const userPromptQuestions = {
         "Add a role",
         "View all employees",
         "Add an employee",
-        "Update an employee",
         "Exit"
     ]
 }
@@ -205,7 +204,7 @@ const startUserPrompts = async () => {
         .then((employeeAnswers) => {
             connection.query (
                 `INSERT INTO employee 
-                    ( first_name, last_name, role_id )
+                    ( first_name, last_name, role_id)
 
                 VALUES 
                     ('${employeeAnswers.addEmployeePromptFirstName}', '${employeeAnswers.addEmployeePromptLastName}', '${employeeAnswers.addEmployeePromptRoleID}');`,
