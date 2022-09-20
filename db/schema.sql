@@ -19,8 +19,8 @@ CREATE TABLE employee {
     id: INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     first_name: VARCHAR(30) NOT NULL,
     last_name: VARCHAR(30) NOT NULL,
-    role_id: INT NOT NULL AUTO_INCREMENT,
-    manager_id: INT NOT NULL AUTO_INCREMENT,
+    role_id: INT NOT NULL,
+    manager_id: INT,
 
     -- TODO: REFERENCE THE KEYS WHEN THEYRE REFERENCABLE
     -- FOREIGN KEY (role_id) REFERENCES 
