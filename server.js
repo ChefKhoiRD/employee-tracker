@@ -7,17 +7,9 @@ const cTable = require('console.table');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    passowrd: 'password',
+    password: 'password',
     database: 'employee_db'
 });
-
-// Initalize app
-const startApp = () => {
-    startUserPrompts()
-};
-
-startApp();
-
 
 // User prompt questions
 const userPromptQuestions = {
@@ -42,7 +34,7 @@ const startUserPrompts = async () => {
     await inquirer.prompt(userPromptQuestions)
 
     .then(answer => {
-        // NOTE! - answer.userQuestions might be the wrong place to get answers, maybe answer.userPromptQuestions
+        
         switch(answer.userQuestions) {
             case "View all departments":
                 showDepartment()
@@ -88,14 +80,15 @@ const startUserPrompts = async () => {
         connection.query(seeDepartmentDb, (err, data) => {
             if (err) throw err;
 
-            console.log('/n')
             console.table(data)
+
+            startUserPrompts();
         })
     };
 
     // Add department function
     const addDepartment = () => {
-        return inquirer.prompt([
+        inquirer.prompt([
             {
                 name: 'addDepartmentPromptName',
                 type: 'input',
@@ -103,13 +96,17 @@ const startUserPrompts = async () => {
             }
         ])
 
-        .then((answers) => {
+        .then((departmentAnswers) => {
             connection.query (
                 `INSERT INTO department (name) 
-                    VALUES (
-                        '${answers.addDepartmentPromptName}'
-                        )`
+                    VALUES 
+                    ('${departmentAnswers.addDepartmentPromptName}');`
             )
+
+            console.log(`Added '${departmentAnswers.addDepartmentPromptName}' to the database`)
+
+            startUserPrompts();
+
         })
     };
 
@@ -123,14 +120,15 @@ const startUserPrompts = async () => {
         connection.query(seeRolesDb, (err, data) => {
             if (err) throw err;
 
-            console.log('/n')
             console.table(data)
+
+            startUserPrompts();
         })
     };
 
     // Add roles function
     const addRole = () => {
-        return inquirer.prompt([
+        inquirer.prompt([
             {
                 name: 'addRolePromptTitle',
                 type: 'input',
@@ -147,15 +145,23 @@ const startUserPrompts = async () => {
                 message: "Department ID number: "
             }
         ])
-        .then((answers) => {
+
+        .then((rolesAnswers) => {
             connection.query (
-                `INSERT INTO role (title, salary, department_id) 
-                    VALUES (
-                        '${answers.addRolePromptTitle}',
-                        '${answers.addRolePromptSalary}',
-                        '${answers.addRolePromptDepartmentId}',
-                    )`,
+                `INSERT INTO roles 
+                ( title, salary, department_id )
+                VALUES 
+                ('${rolesAnswers.addRolePromptTitle}', '${rolesAnswers.addRolePromptSalary}', '${rolesAnswers.addRolePromptDepartmentId}');`,
             )
+
+            console.log(`Added 
+            '${rolesAnswers.addRolePromptTitle}', 
+            '${rolesAnswers.addRolePromptSalary}',
+            '${rolesAnswers.addRolePromptDepartmentId}'
+            to the database`)
+
+            startUserPrompts();
+
         })
     };
 
@@ -169,14 +175,16 @@ const startUserPrompts = async () => {
         connection.query(seeEmployeesDb, (err, data) => {
             if (err) throw err;
 
-            console.log('/n')
             console.table(data)
+
+            startUserPrompts();
+
         })
     };
 
     // Add employees function
     const addEmployee = () => {
-        return inquirer.prompt([
+        inquirer.prompt([
             {
                 name: 'addEmployeePromptFirstName',
                 type: 'input',
@@ -191,37 +199,33 @@ const startUserPrompts = async () => {
                 name: 'addEmployeePromptRoleID',
                 type: 'input',
                 message: "Employee's Role ID #: "
-            },
-            {
-                name: 'addEmployeePromptManagerID',
-                type: 'list',
-                message: "Is employee a Manager?",
-                choices: [
-                    "Yes",
-                    "No"
-                ]
-            },
-            {
-                name: 'addEmployeePromptManagerID2',
-                type: 'input',
-                message: "Employee Manager ID #: ",
-                when: (answers) => {
-                    if(answers.addDepartmentPromptManagerID === "Yes") {
-                        return true
-                    }
-                }
-            },
-            
+            }
         ])
-        .then((answers) => {
+
+        .then((employeeAnswers) => {
             connection.query (
-                `INSERT INTO employee (first_name, last_name, role_id, manager_id)
-                    VALUES (
-                        '${answers.addDepartmentPromptFirstName}'
-                        '${answers.addDepartmentPromptLastName}'
-                        '${answers.addDepartmentPromptRoleID}'
-                        '${answers.addDepartmentPromptManagerID}'
-                    )`,
+                `INSERT INTO employee 
+                    ( first_name, last_name, role_id )
+
+                VALUES 
+                    ('${employeeAnswers.addEmployeePromptFirstName}', '${employeeAnswers.addEmployeePromptLastName}', '${employeeAnswers.addEmployeePromptRoleID}');`,
             )
+
+            console.log(`Added 
+            '${employeeAnswers.addEmployeePromptFirstName}',
+            '${employeeAnswers.addEmployeePromptLastName}',
+            '${employeeAnswers.addEmployeePromptRoleID}'
+             to the database`)
+        
+            startUserPrompts();
+
         })
+
     };
+    
+// Initalize app
+const startApp = () => {
+    startUserPrompts()
+};
+
+startApp();
